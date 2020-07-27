@@ -3,6 +3,7 @@ package shutdowns
 import (
 	"context"
 	"errors"
+	"net/http"
 	"testing"
 	"time"
 
@@ -10,27 +11,23 @@ import (
 )
 
 type testBlockListen struct {
-	closed    bool
-	closeChan chan struct{}
+	*http.Server
+	closed bool
 }
 
 func (t *testBlockListen) Start() error {
-	select {
-	case <-t.closeChan:
-		return nil
-	}
+	return t.Server.ListenAndServe()
 }
 
 func (t *testBlockListen) Close() error {
 	t.closed = true
-	close(t.closeChan)
-	return nil
+	return t.Server.Close()
 }
 
 func Test_BlockListen(t *testing.T) {
 	assert := assert.New(t)
 	blockRun := &testBlockListen{
-		closeChan: make(chan struct{}, 1),
+		Server: &http.Server{},
 	}
 
 	ctx, cancelFn := context.WithTimeout(context.Background(), 10*time.Millisecond)
