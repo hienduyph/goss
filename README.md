@@ -1,6 +1,7 @@
 # GOSS
-List of golang utils collections that share across my projects
-Beucause I'm to tired to copy from one to another
+List of golang utils collections that share across my projects.
+
+Because I'm to tired to copy from one to another
 
 ## Shutdown Hook
 
