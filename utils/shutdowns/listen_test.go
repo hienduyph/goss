@@ -3,7 +3,9 @@ package shutdowns
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -11,23 +13,27 @@ import (
 )
 
 type testBlockListen struct {
-	*http.Server
+	*httptest.Server
 	closed bool
 }
 
 func (t *testBlockListen) Start() error {
-	return t.Server.ListenAndServe()
+	t.Server.Start()
+	return nil
 }
 
 func (t *testBlockListen) Close() error {
 	t.closed = true
-	return t.Server.Close()
+	t.Server.Close()
+	return nil
 }
 
 func Test_BlockListen(t *testing.T) {
 	assert := assert.New(t)
 	blockRun := &testBlockListen{
-		Server: &http.Server{},
+		Server: httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintln(w, "Hello, client")
+		})),
 	}
 
 	ctx, cancelFn := context.WithTimeout(context.Background(), 10*time.Millisecond)

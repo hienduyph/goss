@@ -14,7 +14,8 @@ func Test_ShutdownCtx(t *testing.T) {
 	assert := assert.New(t)
 
 	timeout := time.After(3 * time.Second)
-	ctx := NewCtx()
+	ctx, done := NewCtx()
+	defer done()
 	assert.NotNil(ctx)
 	go func() {
 		time.Sleep(5 * time.Millisecond)

@@ -19,6 +19,7 @@ func BlockListen(ctx context.Context, r RunnableClosable) error {
 	for {
 		select {
 		case err, _ := <-lisErr:
+			_ = r.Close()
 			return err
 		case <-ctx.Done():
 			return r.Close()
