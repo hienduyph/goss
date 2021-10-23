@@ -2,7 +2,11 @@ package httpx
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/hienduyph/goss/logger"
 )
 
 func NewServer() *Server {
@@ -11,6 +15,7 @@ func NewServer() *Server {
 
 type Server struct {
 	*http.Server
+	ShutdownTimeout time.Duration
 }
 
 func (s *Server) Run(ctx context.Context) error {
@@ -22,9 +27,23 @@ func (s *Server) Run(ctx context.Context) error {
 
 	// wait things dont
 	select {
-	case err, _ := <-errCh:
+	case err := <-errCh:
 		return err
 	case <-ctx.Done():
-		return s.Shutdown(context.Background())
+
+		shutdownCtx := context.Background()
+		if s.ShutdownTimeout > 0 {
+			var cancel context.CancelFunc
+			// Give outstanding requests a deadline for completion.
+			shutdownCtx, cancel = context.WithTimeout(shutdownCtx, s.ShutdownTimeout)
+			defer cancel()
+		}
+
+		if e := s.Shutdown(shutdownCtx); e != nil {
+			s.Close()
+			return fmt.Errorf("can not shutdown graceful: %w", e)
+		}
+		logger.Info("Server shutdown!")
+		return nil
 	}
 }
