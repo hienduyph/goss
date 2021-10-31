@@ -9,33 +9,35 @@ import (
 	"github.com/hienduyph/goss/logger"
 )
 
-func NewServer() *Server {
-	return &Server{Server: &http.Server{}}
-}
+func Run(ctx context.Context, s *http.Server, opts ...runOptFunc) error {
+	opt := defaultRunOpt()
+	for _, fn := range opts {
+		fn(opt)
+	}
 
-type Server struct {
-	*http.Server
-	ShutdownTimeout time.Duration
-}
-
-func (s *Server) Run(ctx context.Context) error {
 	errCh := make(chan error, 1)
 	go func() {
-		errCh <- s.ListenAndServe()
+		if opt.tlsCertFile != "" && opt.tlsKeyFile != "" {
+			logger.Info("Listening with TLS", "addr", s.Addr)
+			errCh <- s.ListenAndServeTLS(opt.tlsCertFile, opt.tlsKeyFile)
+		} else {
+			logger.Info("Listening", "addr", s.Addr)
+			errCh <- s.ListenAndServe()
+		}
 		close(errCh)
 	}()
 
-	// wait things dont
+	// wait things done
 	select {
 	case err := <-errCh:
-		return err
-	case <-ctx.Done():
+		return fmt.Errorf("serve failed: %w", err)
 
+	case <-ctx.Done():
 		shutdownCtx := context.Background()
-		if s.ShutdownTimeout > 0 {
+		if opt.shutdownTimeout > 0 {
 			var cancel context.CancelFunc
 			// Give outstanding requests a deadline for completion.
-			shutdownCtx, cancel = context.WithTimeout(shutdownCtx, s.ShutdownTimeout)
+			shutdownCtx, cancel = context.WithTimeout(shutdownCtx, opt.shutdownTimeout)
 			defer cancel()
 		}
 
@@ -46,4 +48,29 @@ func (s *Server) Run(ctx context.Context) error {
 		logger.Info("Server shutdown!")
 		return nil
 	}
+}
+
+type runOptFunc func(*runopt)
+
+func WithRunTimeout(t time.Duration) runOptFunc {
+	return func(r *runopt) {
+		r.shutdownTimeout = t
+	}
+}
+
+func WithRunTLS(cert, key string) runOptFunc {
+	return func(r *runopt) {
+		r.tlsCertFile = cert
+		r.tlsKeyFile = key
+	}
+}
+
+func defaultRunOpt() *runopt {
+	return &runopt{}
+}
+
+type runopt struct {
+	shutdownTimeout time.Duration
+	tlsCertFile     string
+	tlsKeyFile      string
 }
