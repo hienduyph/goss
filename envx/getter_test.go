@@ -50,8 +50,8 @@ func Test_GetInt(t *testing.T) {
 	asr := assert.New(t)
 	cases := []struct {
 		val        string
-		defaultVal int
-		expected   int
+		defaultVal int64
+		expected   int64
 	}{
 		{
 			val:        "100",

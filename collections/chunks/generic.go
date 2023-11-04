@@ -1,16 +1,10 @@
-//go:generate genny -in=$GOFILE -out=gen-$GOFILE gen "T=string"
-
 package chunks
 
 import (
 	"math"
-
-	"github.com/cheekybits/genny/generic"
 )
 
-type T generic.Type
-
-func ChunkT(inputs []T, batch int) <-chan []T {
+func Chunk[T any](inputs []T, batch int) <-chan []T {
 	out := make(chan []T, len(inputs)/batch+1)
 	go func() {
 		length := len(inputs)
@@ -29,7 +23,7 @@ func ChunkT(inputs []T, batch int) <-chan []T {
 	return out
 }
 
-func ChunkStreamT(inputs <-chan T, batch int) <-chan []T {
+func ChunkStream[T any](inputs <-chan T, batch int) <-chan []T {
 	out := make(chan []T, batch+1)
 	go func() {
 		chunk := make([]T, 0, batch)

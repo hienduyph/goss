@@ -7,7 +7,7 @@ import (
 )
 
 func String(key, defaultValue string) string {
-	envValue := raw(key)
+	envValue := envRaw(key)
 	if envValue == "" {
 		return defaultValue
 	}
@@ -15,7 +15,7 @@ func String(key, defaultValue string) string {
 }
 
 func Int(key string, defaultValue int64) int64 {
-	envValue := raw(key)
+	envValue := envRaw(key)
 	if envValue == "" {
 		return defaultValue
 	}
@@ -28,7 +28,7 @@ func Int(key string, defaultValue int64) int64 {
 
 // Float64 gets float value
 func Float(key string, defaultValue float64) float64 {
-	envValue := raw(key)
+	envValue := envRaw(key)
 	if envValue == "" {
 		return defaultValue
 	}
@@ -41,13 +41,17 @@ func Float(key string, defaultValue float64) float64 {
 
 // Array parses separator values into go array
 func Array(key, separator string, defaultValue []string) []string {
-	v := strings.Split(raw(key), separator)
+	raw := envRaw(key)
+	if raw == "" {
+		return defaultValue
+	}
+	v := strings.Split(raw, separator)
 	if len(v) == 0 {
 		return defaultValue
 	}
 	return v
 }
 
-func raw(key string) string {
+func envRaw(key string) string {
 	return strings.TrimSpace(os.Getenv(key))
 }

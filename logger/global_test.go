@@ -13,6 +13,6 @@ func TestFatal(t *testing.T) {
 	err := errTest
 	art := assert.New(t)
 	art.PanicsWithError(err.Error(), func() {
-		Fatal(err, "panic", "k", "v")
+		FatalIf(err, "panic", "k", "v")
 	})
 }
