@@ -8,9 +8,9 @@ import (
 	"github.com/hienduyph/goss/errorx"
 )
 
-type HandleFunc func(r *http.Request) (interface{}, error)
+type HandleFunc[T any] func(r *http.Request) (T, error)
 
-func Handle(fn HandleFunc) http.HandlerFunc {
+func Handle[T any](fn HandleFunc[T]) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		resp, e := fn(r)
 		if e != nil {
