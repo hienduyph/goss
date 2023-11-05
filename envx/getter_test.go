@@ -34,11 +34,6 @@ func Test_GetFloat(t *testing.T) {
 			defaultVal: 2.0,
 			expected:   2.0,
 		},
-		{
-			val:        "2",
-			defaultVal: 2.0,
-			expected:   2.0,
-		},
 	}
 	for _, c := range cases {
 		os.Setenv("Test_GetFloat", c.val)
@@ -53,11 +48,6 @@ func Test_GetInt(t *testing.T) {
 		defaultVal int64
 		expected   int64
 	}{
-		{
-			val:        "100",
-			defaultVal: 100,
-			expected:   100,
-		},
 		{
 			val:      "11",
 			expected: 11,

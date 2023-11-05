@@ -11,12 +11,15 @@ type Bytes struct {
 	Err    error
 }
 
+const buf = 1024 * 1024
+
 func ReadLines(ctx context.Context, reader io.Reader) (*Bytes, error) {
-	out := make(chan []byte, 10)
+	const outSize = 10
+	out := make(chan []byte, outSize)
 	res := &Bytes{Stream: out}
 	go func() {
 		sc := bufio.NewScanner(reader)
-		sc.Buffer([]byte{}, 1024*1024)
+		sc.Buffer([]byte{}, buf)
 	Main:
 		for {
 			select {

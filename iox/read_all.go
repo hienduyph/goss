@@ -41,7 +41,7 @@ func Read(ctx context.Context, source string, opts ...readAllOptFn) (io.ReadClos
 
 // ReadAll detect the request protocol and fetch the body of this source
 // currently support:
-// `file://`, `` -> file system
+// `file://`, “ -> file system
 // `http://`, `https://` -> http source
 // `gs://` -> google cloud storage source
 // `s3://` -> aws s3 source

@@ -3,7 +3,6 @@ package jsonx
 import (
 	"io"
 
-	"github.com/bytedance/sonic"
 	json "github.com/bytedance/sonic"
 )
 
@@ -16,10 +15,10 @@ func Unmarshal(data []byte, v any) error {
 }
 
 // NewDecoder create a Decoder holding reader
-func NewDecoder(r io.Reader) sonic.Decoder {
+func NewDecoder(r io.Reader) json.Decoder {
 	return json.ConfigDefault.NewDecoder(r)
 }
 
-func NewEncoder(w io.Writer) sonic.Encoder {
+func NewEncoder(w io.Writer) json.Encoder {
 	return json.ConfigDefault.NewEncoder(w)
 }

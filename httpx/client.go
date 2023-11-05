@@ -19,8 +19,8 @@ type Client interface {
 type RichClient interface {
 	Client
 	Get(context.Context, string) (*http.Response, error)
-	DoJSON(*http.Request, interface{}) error
-	GetJSON(context.Context, string, interface{}) error
+	DoJSON(*http.Request, any) error
+	GetJSON(context.Context, string, any) error
 }
 
 func NewClient(opts ...defaultClientOptFunc) RichClient {
@@ -43,22 +43,22 @@ func (c *defaultClient) Do(r *http.Request) (*http.Response, error) {
 }
 
 func (c *defaultClient) Get(ctx context.Context, uri string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, fmt.Errorf("contruct req failed: %w", err)
+		return nil, fmt.Errorf("construct req failed: %w", err)
 	}
 	return c.Do(req)
 }
 
-func (c *defaultClient) GetJSON(ctx context.Context, path string, data interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, path, nil)
+func (c *defaultClient) GetJSON(ctx context.Context, path string, data any) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, path, http.NoBody)
 	if err != nil {
-		return fmt.Errorf("contruct req failed: %w", err)
+		return fmt.Errorf("construct req failed: %w", err)
 	}
 	return c.DoJSON(req, data)
 }
 
-func (c *defaultClient) DoJSON(r *http.Request, data interface{}) error {
+func (c *defaultClient) DoJSON(r *http.Request, data any) error {
 	resp, err := c.Do(r)
 	if err != nil {
 		return fmt.Errorf("do req failed: %w", err)

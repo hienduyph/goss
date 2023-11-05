@@ -12,6 +12,6 @@ func Get(ctx context.Context, path string) (*http.Response, error) {
 	return globalClient.Get(ctx, path)
 }
 
-func GetJSON(ctx context.Context, path string, out interface{}) error {
+func GetJSON(ctx context.Context, path string, out any) error {
 	return globalClient.GetJSON(ctx, path, out)
 }

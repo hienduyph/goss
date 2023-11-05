@@ -8,22 +8,20 @@ import (
 )
 
 func Test_Chunk(t *testing.T) {
-	assert := assert.New(t)
+	art := assert.New(t)
 	input := make([]string, 0, 10)
-	for _, item := range strings.Split("hello world cc ee ca erac hehe", " ") {
-		input = append(input, item)
-	}
+	input = append(input, strings.Split("hello world cc ee ca erac hehe", " ")...)
 	out := make([][]string, 0, 10)
 	for chunk := range Chunk(input, 2) {
 		out = append(out, chunk)
 	}
-	assert.Equal(4, len(out))
-	assert.Equal(2, len(out[0]))
-	assert.Equal(1, len(out[len(out)-1]))
+	art.Equal(4, len(out))
+	art.Equal(2, len(out[0]))
+	art.Equal(1, len(out[len(out)-1]))
 }
 
 func Test_ChunkStream(t *testing.T) {
-	assert := assert.New(t)
+	art := assert.New(t)
 	input := make(chan string, 10)
 	go func() {
 		for _, w := range strings.Split("hello world cc ee ca erac hehe", " ") {
@@ -35,7 +33,7 @@ func Test_ChunkStream(t *testing.T) {
 	for chunk := range ChunkStream(input, 2) {
 		out = append(out, chunk)
 	}
-	assert.Equal(4, len(out))
-	assert.Equal(2, len(out[0]))
-	assert.Equal(1, len(out[len(out)-1]))
+	art.Equal(4, len(out))
+	art.Equal(2, len(out[0]))
+	art.Equal(1, len(out[len(out)-1]))
 }

@@ -10,7 +10,7 @@ func CloseHook() {
 }
 
 func Factory(name string) Logger {
-	return zapr.NewLogger(global).WithName(name).V(LogDebugLevel)
+	return zapr.NewLogger(global).WithName(name)
 }
 
 var (
@@ -20,7 +20,7 @@ var (
 )
 
 // FatalIf panic on error not empty
-func FatalIf(err error, msg string, keysAndValues ...interface{}) {
+func FatalIf(err error, msg string, keysAndValues ...any) {
 	if err == nil {
 		return
 	}
@@ -31,5 +31,6 @@ func FatalIf(err error, msg string, keysAndValues ...interface{}) {
 var (
 	Info  = logDefault.Info
 	Error = logDefault.Error
-	Debug = logDefault.Info
+	Debug = debugDefault.Info
+	Warn  = warnDefault.Info
 )

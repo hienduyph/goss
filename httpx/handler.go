@@ -16,7 +16,7 @@ func Handle[T any](fn HandleFunc[T]) http.HandlerFunc {
 		if e != nil {
 			s := statusFromErr(e)
 			render.Status(r, s)
-			render.JSON(w, r, map[string]interface{}{"error": e.Error()})
+			render.JSON(w, r, map[string]any{"error": e.Error()})
 			return
 		}
 		render.JSON(w, r, resp)
